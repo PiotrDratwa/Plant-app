@@ -40,7 +40,7 @@ const swaggerUi = require('swagger-ui-express'),
 swaggerDocument = require('./swagger_output.json');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.get(('/login'), async (req, res) =>{
+app.get('/login', async (req, res) =>{
     try {
         const pool = await sql.connect(config);
         const result = await pool.request().query(`SELECT * FROM Users where UserName like ${req.UserName} and PasswordHash like ${req.PasswordHash}`);
@@ -59,7 +59,7 @@ app.get(('/login'), async (req, res) =>{
     }
 })
 
-app.post(('/register'), async (req, res) =>{
+app.post('/register', async (req, res) =>{
     try {
         const pool = await sql.connect(config);
         const result = await pool.request().query(
@@ -73,7 +73,7 @@ app.post(('/register'), async (req, res) =>{
     res.status(201).send(result);
 })
 
-app.get(('/plants'), async (req, res) =>{
+app.get('/plants', async (req, res) =>{
     // #swagger.description = 'fetches plant table linked to user'
     try {
         const pool = await sql.connect(config);
@@ -87,7 +87,7 @@ app.get(('/plants'), async (req, res) =>{
     res.send(result)
 })
 
-app.post(('/plants'), async (req, res) =>{
+app.post('/plants', async (req, res) =>{
     // #swagger.description = 'creates plant and preset table linked to user'
     try {
         const pool = await sql.connect(config);
@@ -113,7 +113,7 @@ app.post(('/plants'), async (req, res) =>{
     res.status(201).send("Created plant and preset");
 });
 
-app.put(('/plants'), async (req, res) =>{
+app.put('/plants', async (req, res) =>{
     // #swagger.description = 'edits plant and preset table linked to user'
     try {
         const pool = await sql.connect(config);
@@ -143,7 +143,7 @@ app.put(('/plants'), async (req, res) =>{
     res.status(201).send("Updated plant and preset");
 });
 
-app.delete(('/plants'), async (req, res) =>{     
+app.delete('/plants', async (req, res) =>{     
     // #swagger.description = 'removes plant and preset table linked to user'
     try {
         const pool = await sql.connect(config);
@@ -170,7 +170,7 @@ app.delete(('/plants'), async (req, res) =>{
     res.status(201).send(result);
 })
 
-app.get(('/preset'), async (req, res) =>{
+app.get('/preset', async (req, res) =>{
     // #swagger.description = 'fetches preset table linked to user'
     try {
         const pool = await sql.connect(config);
@@ -182,7 +182,7 @@ app.get(('/preset'), async (req, res) =>{
     }
 })
 
-app.get(('/history'), async (req, res) =>{
+app.get('/history', async (req, res) =>{
     try {
         const pool = await sql.connect(config);
         const result = await pool.request().query(`SELECT * FROM SensorHistory where PlantId like ${req.PlantId}`);
@@ -193,7 +193,19 @@ app.get(('/history'), async (req, res) =>{
     }
 })
 
+app.get('/test', async (req, res) =>{
+    try {
+        const pool = await sql.connect(config);
+        const result = await pool.request().query('SELECT Message FROM Test where id = 1');
+        console.log(result.recordset);
+        res.status(200).send(result);
+        await pool.close();
+    } catch (err) {
+        console.error('SQL error:', err);
+    }
+})
+
 app.use(express.static('client'));
 app.listen(PORT, () => {
-console.log(`Server running on http://localhost:${PORT}`);
+console.log(`Server running on http://localhost:${PORT}/docs`);
 });
