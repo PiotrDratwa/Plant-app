@@ -12,11 +12,34 @@
   ],
   "paths": {
     "/login": {
-      "get": {
-        "description": "",
+      "post": {
+        "description": "User login",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "UserName": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "PasswordHash": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
@@ -29,7 +52,27 @@
     },
     "/register": {
       "post": {
-        "description": "",
+        "description": "User registration",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "UserName": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "PasswordHash": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "Created"
@@ -39,7 +82,15 @@
     },
     "/plants": {
       "get": {
-        "description": "fetches plant table linked to user",
+        "description": "Fetches plant records linked to user",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -47,7 +98,27 @@
         }
       },
       "post": {
-        "description": "creates plant and preset table linked to user",
+        "description": "creates plant record linked to user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "UserId": {
+                  "type": "number",
+                  "example": 0
+                },
+                "NamePlant": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "Created"
@@ -55,7 +126,35 @@
         }
       },
       "put": {
-        "description": "edits plant and preset table linked to user",
+        "description": "edits plant record linked to user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "PlantId": {
+                  "type": "number",
+                  "example": 0
+                },
+                "UserId": {
+                  "type": "number",
+                  "example": 0
+                },
+                "PresetId": {
+                  "type": "number",
+                  "example": 0
+                },
+                "NamePlant": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "Created"
@@ -63,7 +162,27 @@
         }
       },
       "delete": {
-        "description": "removes plant and preset table linked to user",
+        "description": "removes plant record linked to user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "UserId": {
+                  "type": "number",
+                  "example": 0
+                },
+                "NamePlant": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "Created"
@@ -75,18 +194,130 @@
       "get": {
         "description": "fetches preset table linked to user",
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "creates plant record linked to user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "NamePreset": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "Temp": {
+                  "type": "number",
+                  "example": 0
+                },
+                "Moist": {
+                  "type": "number",
+                  "example": 0
+                },
+                "AirQuality": {
+                  "type": "number",
+                  "example": 0
+                },
+                "UserId": {
+                  "type": "number",
+                  "example": 0
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      },
+      "put": {
+        "description": "edits preset record linked to user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "Id": {
+                  "type": "number",
+                  "example": 0
+                },
+                "NamePreset": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "Temp": {
+                  "type": "number",
+                  "example": 0
+                },
+                "Moist": {
+                  "type": "number",
+                  "example": 0
+                },
+                "AirQuality": {
+                  "type": "number",
+                  "example": 0
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      },
+      "delete": {
+        "description": "removes plant record linked to user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "Id": {
+                  "type": "number",
+                  "example": 0
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
           }
         }
       }
     },
     "/history": {
       "get": {
-        "description": "",
+        "description": "fetches sensor history linked to plant",
+        "parameters": [
+          {
+            "name": "PlantId",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "OK"
           }
         }
       }

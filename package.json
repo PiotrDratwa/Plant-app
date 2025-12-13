@@ -1,5 +1,9 @@
 {
   "dependencies": {
+    "@clerk/nextjs": "^6.36.0",
+    "bcrypt": "^6.0.0",
+    "cookie": "^1.1.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "mssql": "^12.1.0",
