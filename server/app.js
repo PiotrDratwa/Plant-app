@@ -7,8 +7,8 @@ app.use(cookieParser());
 
 const cors = require('cors');
 app.use(cors({
-  origin: 'http://localhost:3001', // frontend origin
-  credentials: true, // <-- konieczne dla cookie
+  origin: 'http://localhost:3001', 
+  credentials: true, 
 }));
 
 const bcrypt = require('bcrypt');
@@ -109,6 +109,14 @@ app.post('/login', async (req, res) => {
                 secure: false,
                 sameSite: 'lax',
                 maxAge: 24 * 60 * 60 * 1000
+            });
+
+            res.cookie('userID', String(user.Id), {
+                httpOnly: true,
+                maxAge: 24*60*60*1000,
+                path: '/',
+                sameSite: 'lax',
+                secure: false,
             });
 
             return res.status(200).json({ success: true });
