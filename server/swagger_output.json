@@ -114,6 +114,10 @@
                 "NamePlant": {
                   "type": "string",
                   "example": "string"
+                },
+                "PresetId": {
+                  "type": "number",
+                  "example": 0
                 }
               }
             }
@@ -171,13 +175,9 @@
             "schema": {
               "type": "object",
               "properties": {
-                "UserId": {
+                "Id": {
                   "type": "number",
                   "example": 0
-                },
-                "NamePlant": {
-                  "type": "string",
-                  "example": "string"
                 }
               }
             }
@@ -193,9 +193,23 @@
     "/preset": {
       "get": {
         "description": "fetches preset table linked to user",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },

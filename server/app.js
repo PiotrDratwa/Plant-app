@@ -112,7 +112,7 @@ app.post('/login', async (req, res) => {
             });
 
             res.cookie('userID', String(user.Id), {
-                httpOnly: true,
+                httpOnly: false,
                 maxAge: 24*60*60*1000,
                 path: '/',
                 sameSite: 'lax',
@@ -190,6 +190,7 @@ app.post('/plants', async (req, res) => {
             schema: {
                 UserId: 0,
                 NamePlant: "string",
+                PresetId: 0,
             }
         }
     */
@@ -256,20 +257,17 @@ app.delete('/plants', async (req, res) => {
             in: 'body',
             required: true,
             schema: {
-                UserId: 0,
-                NamePlant: "string"
+                Id: 0,
             }
         }
     */
     try {
         const pool = await poolPromise;
         const result = await pool.request()
-            .input('NamePlant', sql.VarChar, req.body.NamePlant)
-            .input('UserId', sql.Int, req.body.UserId)
+            .input('Id', sql.Int, req.body.Id)
             .query(
                 `DELETE FROM Plants 
-                 WHERE NamePlant = @NamePlant 
-                 AND UserId = @UserId`
+                 WHERE Id = @Id`
             );
 
         res.status(201).send(result);
@@ -280,18 +278,30 @@ app.delete('/plants', async (req, res) => {
 });
 
 app.get('/preset', async (req, res) => {
-    /*
-        #swagger.description = 'fetches preset table linked to user'
-    */
-    try {
-        const pool = await poolPromise;
-        const result = await pool.request()
-            .query('SELECT * FROM Presets');
-        res.send(result);
-
-    } catch (err) {
-        console.error('SQL error:', err);
+  /*
+      #swagger.description = 'fetches preset table linked to user'
+      #swagger.parameters['Id'] = {
+          in: 'query',
+          required: true,
+          type: 'integer'
+      }
+  */
+  try {
+    const presetId = parseInt(req.query.Id);
+    if (isNaN(presetId)) {
+      return res.status(400).json({ error: "Invalid Id" });
     }
+
+    const pool = await poolPromise;
+    const result = await pool.request()
+      .input('Id', sql.Int, presetId)
+      .query('SELECT * FROM Presets WHERE Id = @Id');
+
+    res.json(result.recordset)
+  } catch (err) {
+    console.error('SQL error:', err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 app.post('/preset', async (req, res) => {
@@ -319,10 +329,12 @@ app.post('/preset', async (req, res) => {
             .input('UserId', sql.Int, req.body.UserId)
             .query(
                 `INSERT INTO Presets (NamePreset, Temp, Moist, AirQuality, UserId)
-                 VALUES (@NamePreset, @Temp, @Moist, @AirQuality, @UserId)`
+                OUTPUT INSERTED.Id
+                VALUES (@NamePreset, @Temp, @Moist, @AirQuality, @UserId)`
             );
 
-        res.status(201).send("Created preset");
+        const newPresetId = presetResult.recordset[0].Id;
+        res.status(201).json({ id: newPresetId });
 
     } catch (err) {
         console.error('SQL error:', err);
