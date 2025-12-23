@@ -217,24 +217,21 @@ app.put('/plants', async (req, res) => {
             schema: {
                 PlantId: 0,
                 UserId: 0,
-                PresetId: 0,
                 NamePlant: "string",
             }
         }
     */
     try {
         const pool = await poolPromise;
+        console.log((req.body));
 
         await pool.request()
             .input('NamePlant', sql.VarChar, req.body.NamePlant)
             .input('UserId', sql.Int, req.body.UserId)
-            .input('PresetId', sql.Int, req.body.PresetId)
             .input('PlantId', sql.Int, req.body.PlantId)
             .query(
                 `UPDATE Plants
-                 SET NamePlant = @NamePlant,
-                     UserId = @UserId,
-                     PresetId = @PresetId
+                 SET NamePlant = @NamePlant
                  WHERE Id = @PlantId`
             );
 
@@ -350,7 +347,8 @@ app.put('/preset', async (req, res) => {
                 NamePreset: "string",
                 Temp: 0,
                 Moist: 0,
-                AirQuality: 0
+                AirQuality: 0,
+                IntervalMinutes: 0
             }
         }
     */
@@ -363,12 +361,14 @@ app.put('/preset', async (req, res) => {
             .input('Moist', sql.Int, req.body.Moist)
             .input('AirQuality', sql.Int, req.body.AirQuality)
             .input('Id', sql.Int, req.body.Id)
+            .input('IntervalMinutes', sql.Int, req.body.IntervalMinutes)
             .query(
                 `UPDATE Presets
                  SET NamePreset = @NamePreset,
                      Temp = @Temp,
                      Moist = @Moist,
-                     AirQuality = @AirQuality
+                     AirQuality = @AirQuality,
+                     WateringIntervalMinutes = @IntervalMinutes
                  WHERE Id = @Id`
             );
 
@@ -435,24 +435,15 @@ app.put('/watering', async (req, res) => {
     */
    try {
         const pool = await poolPromise;
-        const checkResult = await pool.request()
-            .query(`SELECT WaterNow FROM WaterButton`);
-        
-        if (checkResult.recordset.length === 0) {
-            return res.status(404).json({ message: 'the value has not been posted' });
-        }
-
-        const currentValue = checkResult.recordset[0].WaterNow;
-        const newValue = (parseInt(currentValue)+1)%2
 
         await pool.request()
-            .input('newValue', newValue)
+            .input('newValue', true)
             .query(`UPDATE WaterButton SET WaterNow = @newValue`)
 
         res.json({
             message: 'Watering value updated',
             oldValue: currentValue,
-            newValue: newValue
+            newValue: !currentValue
         });
 
    } catch (err){

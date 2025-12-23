@@ -147,10 +147,6 @@
                   "type": "number",
                   "example": 0
                 },
-                "PresetId": {
-                  "type": "number",
-                  "example": 0
-                },
                 "NamePlant": {
                   "type": "string",
                   "example": "string"
@@ -242,6 +238,10 @@
                 "UserId": {
                   "type": "number",
                   "example": 0
+                },
+                "IntervalMinutes": {
+                  "type": "number",
+                  "example": 0
                 }
               }
             }
@@ -280,6 +280,10 @@
                   "example": 0
                 },
                 "AirQuality": {
+                  "type": "number",
+                  "example": 0
+                },
+                "IntervalMinutes": {
                   "type": "number",
                   "example": 0
                 }
@@ -336,9 +340,9 @@
         }
       }
     },
-    "/test": {
-      "get": {
-        "description": "",
+    "/watering": {
+      "put": {
+        "description": "device starts watering the plant when it",
         "responses": {
           "200": {
             "description": "OK"
