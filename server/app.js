@@ -19,10 +19,6 @@ function hashPassword(nakedPass) {
     })
 }
 
-async function checkPassword(nakedPass, hash) {
-    return await bcrypt.compare(nakedPass, hash);
-}
-
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -316,6 +312,7 @@ app.post('/preset', async (req, res) => {
                 Moist: 0,
                 AirQuality: 0,
                 UserId: 0,
+                IntervalMinutes: 0,
             }
         }
     */
@@ -327,10 +324,11 @@ app.post('/preset', async (req, res) => {
             .input('Moist', sql.Int, req.body.Moist)
             .input('AirQuality', sql.Int, req.body.AirQuality)
             .input('UserId', sql.Int, req.body.UserId)
+            .input('IntervalMinutes', sql.Int, req.body.IntervalMinutes)
             .query(
-                `INSERT INTO Presets (NamePreset, Temp, Moist, AirQuality, UserId)
+                `INSERT INTO Presets (NamePreset, Temp, Moist, AirQuality, UserId, WateringIntervalMinutes)
                 OUTPUT INSERTED.Id
-                VALUES (@NamePreset, @Temp, @Moist, @AirQuality, @UserId)`
+                VALUES (@NamePreset, @Temp, @Moist, @AirQuality, @UserId, @IntervalMinutes)`
             );
 
         const newPresetId = presetResult.recordset[0].Id;
@@ -431,16 +429,36 @@ app.get('/history', async (req, res) => {
     }
 });
 
-app.get('/test', async (req, res) => {
-    try {
+app.put('/watering', async (req, res) => {
+    /*
+        #swagger.description = 'device starts watering the plant when it's value is changed'
+    */
+   try {
         const pool = await poolPromise;
-        const result = await pool.request().query('SELECT Message FROM Test where id = 1');
-        res.status(200).send(result);
+        const checkResult = await pool.request()
+            .query(`SELECT WaterNow FROM WaterButton`);
+        
+        if (checkResult.recordset.length === 0) {
+            return res.status(404).json({ message: 'the value has not been posted' });
+        }
 
-    } catch (err) {
-        console.error('SQL error:', err);
-    }
-});
+        const currentValue = checkResult.recordset[0].WaterNow;
+        const newValue = (parseInt(currentValue)+1)%2
+
+        await pool.request()
+            .input('newValue', newValue)
+            .query(`UPDATE WaterButton SET WaterNow = @newValue`)
+
+        res.json({
+            message: 'Watering value updated',
+            oldValue: currentValue,
+            newValue: newValue
+        });
+
+   } catch (err){
+        console.error('SQL error:', err)
+   }
+})
 
 app.use(express.static('client'));
 app.listen(PORT, () => {
