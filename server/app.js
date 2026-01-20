@@ -1,13 +1,13 @@
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 const cookieParser = require('cookie-parser');
 app.use(cookieParser()); 
 
 const cors = require('cors');
 app.use(cors({
-  origin: ['https://gentle-stone-01b3c9603.2.azurestaticapps.net', 'http://localhost:3001'],
+  origin: 'http://localhost:3001',
   credentials: true, 
 }));
 
@@ -55,7 +55,7 @@ const doc = {
         title: 'Plant-app-backend',
         description: 'REST API documentation'
     },
-    host: process.env.inzynierka-web-backend.azurewebsites.net || 'localhost:3000',
+    host:'localhost:3000',
 }
 swaggerAutogen(outputFile, endpointsFiles, doc)
 
@@ -450,6 +450,23 @@ app.put('/watering', async (req, res) => {
         console.error('SQL error:', err)
    }
 })
+
+app.get('/test', async (req, res) => {
+    /*
+        #swagger.description = 'test'
+        }
+    */
+    try {
+        const pool = await poolPromise;
+        const result = await pool.request()
+            .query('SELECT * FROM Users');
+
+        res.send(result);
+
+    } catch (err) {
+        console.error('SQL error:', err);
+    }
+});
 
 app.use(express.static('client'));
 app.listen(PORT, () => {

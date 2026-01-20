@@ -1,4 +1,9 @@
 {
+  "name": "plant-app-backend",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server/app.js"
+  },
   "dependencies": {
     "@clerk/nextjs": "^6.36.0",
     "bcrypt": "^6.0.0",
