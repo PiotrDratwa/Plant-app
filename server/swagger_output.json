@@ -344,8 +344,8 @@
       "put": {
         "description": "device starts watering the plant when it",
         "responses": {
-          "200": {
-            "description": "OK"
+          "default": {
+            "description": ""
           }
         }
       }

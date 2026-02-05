@@ -420,7 +420,7 @@ app.get('/history', async (req, res) => {
         const pool = await poolPromise;
         const result = await pool.request()
             .input('PlantId', sql.Int, req.query.PlantId)
-            .query('SELECT * FROM SensorHistory WHERE PlantId = @PlantId');
+            .query('SELECT TOP 1 * FROM SensorHistory WHERE PlantId = @PlantId ORDER BY Id DESC;');
 
         res.send(result);
 
@@ -439,13 +439,6 @@ app.put('/watering', async (req, res) => {
         await pool.request()
             .input('newValue', true)
             .query(`UPDATE WaterButton SET WaterNow = @newValue`)
-
-        res.json({
-            message: 'Watering value updated',
-            oldValue: currentValue,
-            newValue: !currentValue
-        });
-
    } catch (err){
         console.error('SQL error:', err)
    }
@@ -467,6 +460,8 @@ app.get('/test', async (req, res) => {
         console.error('SQL error:', err);
     }
 });
+
+
 
 app.use(express.static('client'));
 app.listen(PORT, () => {
